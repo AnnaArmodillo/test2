@@ -8,6 +8,7 @@ import addIcon from "/add.svg";
 const modalOpen = ref<boolean>(false);
 const values = ref<string[]>(["1", "2", "item"]);
 const newValue = ref<string>("");
+const options = ref<any[]>([]);
 function deleteValueHandler(value: string) {
   values.value = values.value.filter((item) => item !== value);
 }
@@ -16,6 +17,17 @@ function addValueHandler() {
   newValue.value = "";
   modalOpen.value = false;
 }
+function selectOptionHandler(option: string) {
+  values.value.push(option);
+  modalOpen.value = false;
+}
+async function fetchOptions() {
+  const res = await fetch(
+    `https://jsonplaceholder.typicode.com/todos`
+  );
+  options.value = await res.json();
+}
+fetchOptions();
 </script>
 
 <template>
@@ -33,6 +45,13 @@ function addValueHandler() {
           <input type="text" v-model="newValue" placeholder="Введите новое значение"/>
           <img :src="addIcon" alt="add" class="value-input__add" @click="addValueHandler"/>
         </div>
+      </template>
+      <template v-slot:options>
+        <ul class="options">
+          <li v-for="option in options" :key="option.id" @click="selectOptionHandler(option.title)" class="options__option">
+            {{ option.title }}
+          </li>
+        </ul>
       </template>
     </Modal>
   </div>
@@ -72,5 +91,18 @@ function addValueHandler() {
   }
   .value-input__add {
     margin-left: 8px;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+  }
+  .options__option {
+    list-style-type: none;
+  }
+  .options__option:not(:last-child) {
+    margin-bottom: 8px;
   }
 </style>
