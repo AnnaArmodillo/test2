@@ -3,11 +3,18 @@ import { ref } from "vue";
 import Modal from "../Modal/Modal.vue";
 import editIcon from "/edit.svg";
 import closeIcon from "/close.svg";
+import addIcon from "/add.svg";
 
 const modalOpen = ref<boolean>(false);
 const values = ref<string[]>(["1", "2", "item"]);
+const newValue = ref<string>("");
 function deleteValueHandler(value: string) {
   values.value = values.value.filter((item) => item !== value);
+}
+function addValueHandler() {
+  values.value.push(newValue.value);
+  newValue.value = "";
+  modalOpen.value = false;
 }
 </script>
 
@@ -21,6 +28,12 @@ function deleteValueHandler(value: string) {
     </ul>
     <img :src="editIcon" alt="edit" @click="modalOpen = true"/>
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
+      <template v-slot:modalInput>
+        <div class="value-input">
+          <input type="text" v-model="newValue" placeholder="Введите новое значение"/>
+          <img :src="addIcon" alt="add" class="value-input__add" @click="addValueHandler"/>
+        </div>
+      </template>
     </Modal>
   </div>
 </template>
@@ -51,5 +64,13 @@ function deleteValueHandler(value: string) {
     display: flex;
     align-items: center;
     margin-right: 8px;
+  }
+  .value-input {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .value-input__add {
+    margin-left: 8px;
   }
 </style>
