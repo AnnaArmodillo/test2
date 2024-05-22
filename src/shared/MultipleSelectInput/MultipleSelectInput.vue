@@ -37,13 +37,11 @@ function selectOptionHandler(option: string) {
     </ul>
     <img :src="editIcon" alt="edit" @click="modalOpen = true"/>
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
-      <template v-slot:modalInput>
+      <template v-slot:modalContent>
         <div class="value-input">
           <input type="text" v-model="newValue" placeholder="Введите новое значение"/>
           <img :src="addIcon" alt="add" class="value-input__add" @click="addValueHandler"/>
         </div>
-      </template>
-      <template v-slot:options>
         <ul class="options">
           <li v-for="option in $props.options" :key="option.id" @click="selectOptionHandler(option.title)" class="options__option">
             {{ option.title }}

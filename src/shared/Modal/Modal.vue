@@ -10,8 +10,7 @@ const emit = defineEmits(['close'])
     <div v-if="modalOpen" class="modal" @click="emit('close')">
       <div class="modal__content" @click.stop>
         <img :src="closeIcon" alt="close" @click="emit('close')" class="modal__close"/>
-        <slot name="modalInput"></slot>
-        <slot name="options"></slot>
+        <slot name="modalContent"></slot>
       </div>
     </div>
   </teleport>
