@@ -1,14 +1,17 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import { ref } from "vue";
 import Modal from "../Modal/Modal.vue";
 import editIcon from "/edit.svg";
 import closeIcon from "/close.svg";
 import addIcon from "/add.svg";
 
+defineProps<{
+  options?: T[]
+}>();
+
 const modalOpen = ref<boolean>(false);
 const values = ref<string[]>(["1", "2", "item"]);
 const newValue = ref<string>("");
-const options = ref<any[]>([]);
 function deleteValueHandler(value: string) {
   values.value = values.value.filter((item) => item !== value);
 }
@@ -21,13 +24,7 @@ function selectOptionHandler(option: string) {
   values.value.push(option);
   modalOpen.value = false;
 }
-async function fetchOptions() {
-  const res = await fetch(
-    `https://jsonplaceholder.typicode.com/todos`
-  );
-  options.value = await res.json();
-}
-fetchOptions();
+
 </script>
 
 <template>
@@ -48,7 +45,7 @@ fetchOptions();
       </template>
       <template v-slot:options>
         <ul class="options">
-          <li v-for="option in options" :key="option.id" @click="selectOptionHandler(option.title)" class="options__option">
+          <li v-for="option in $props.options" :key="option.id" @click="selectOptionHandler(option.title)" class="options__option">
             {{ option.title }}
           </li>
         </ul>
