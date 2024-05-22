@@ -29,22 +29,24 @@ function selectOptionHandler(option: string) {
 </script>
 
 <template>
-  <div class="input">
-    <ul class="values">
-      <li v-for="value in values" :key="value" class="values__value">
-        {{ value }}
-        <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="delete-icon"/>
-      </li>
-    </ul>
-    <img :src="editIcon" alt="edit" @click="modalOpen = true"/>
+  <div class="multiple-select">
+    <div class="multiple-select__input">
+      <ul class="multiple-select__values">
+        <li v-for="value in values" :key="value" class="multiple-select__value">
+          {{ value }}
+          <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon"/>
+        </li>
+      </ul>
+    </div>
+    <img :src="editIcon" alt="edit" @click="modalOpen = true" class="multiple-select__edit-button"/>
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
       <template v-slot:modalContent>
-        <div v-if="$props.enableCreate" class="value-input">
+        <div v-if="$props.enableCreate" class="multiple-select__value-input">
           <input type="text" v-model="newValue" placeholder="Введите новое значение"/>
-          <img :src="addIcon" alt="add" class="value-input__add" @click="addValueHandler"/>
+          <img :src="addIcon" alt="add" class="multiple-select__add" @click="addValueHandler"/>
         </div>
-        <ul class="options">
-          <li v-for="option in $props.options" :key="option.id" @click="selectOptionHandler(option.title)" class="options__option">
+        <ul class="multiple-select__options">
+          <li v-for="option in $props.options" :key="option.id" @click="selectOptionHandler(option.title)" class="multiple-select__option">
             {{ option.title }}
           </li>
         </ul>
@@ -54,7 +56,14 @@ function selectOptionHandler(option: string) {
 </template>
 
 <style scoped>
-  .input {
+  .multiple-select {
+    display: flex;
+    align-items: flex-start;
+  }
+  .multiple-select__edit-button {
+    margin-left: 8px;
+  }
+  .multiple-select__input {
     display: flex;
     align-items: center;
     border-radius: 20px;
@@ -66,45 +75,45 @@ function selectOptionHandler(option: string) {
     height: 24px;
     cursor: pointer;
   }
-  .values {
+  .multiple-select__values {
     display: flex;
-    padding: 0;
+    padding: 4px 0 0 0;
     margin: 0;
     flex-wrap: wrap;
   }
-  .values__value {
+  .multiple-select__value {
     list-style-type: none;
     background-color: #F2F2F2;
     border-radius: 8px;
-    padding: 8px 8px 4px 8px;
+    padding: 8px;
     display: flex;
     align-items: center;
-    margin-right: 8px;
     white-space: nowrap;
     margin-bottom: 4px;
+    margin-right: 8px;
   }
-  .value-input {
+  .multiple-select__value-input {
     display: flex;
     align-items: center;
     margin-bottom: 16px;
   }
-  .value-input__add {
+  .multiple-select__add {
     margin-left: 8px;
   }
-  .options {
+  .multiple-select__options {
     display: flex;
     flex-direction: column;
     padding: 0;
     margin: 0;
     overflow-y: auto;
   }
-  .options__option {
+  .multiple-select__option {
     list-style-type: none;
   }
-  .options__option:not(:last-child) {
+  .multiple-select__option:not(:last-child) {
     margin-bottom: 8px;
   }
-  .delete-icon {
+  .multiple-select__delete-icon {
     margin-left: 8px;
   }
 </style>
