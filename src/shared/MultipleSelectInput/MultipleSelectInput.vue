@@ -70,15 +70,18 @@ function selectOptionHandler(option: string) {
     display: flex;
     padding: 0;
     margin: 0;
+    flex-wrap: wrap;
   }
   .values__value {
     list-style-type: none;
     background-color: #F2F2F2;
     border-radius: 8px;
-    padding: 8px;
+    padding: 8px 8px 4px 8px;
     display: flex;
     align-items: center;
     margin-right: 8px;
+    white-space: nowrap;
+    margin-bottom: 4px;
   }
   .value-input {
     display: flex;
@@ -100,5 +103,8 @@ function selectOptionHandler(option: string) {
   }
   .options__option:not(:last-child) {
     margin-bottom: 8px;
+  }
+  .delete-icon {
+    margin-left: 8px;
   }
 </style>
