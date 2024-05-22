@@ -6,7 +6,8 @@ import closeIcon from "/close.svg";
 import addIcon from "/add.svg";
 
 defineProps<{
-  options?: T[]
+  options?: T[],
+  enableCreate?: boolean
 }>();
 
 const modalOpen = ref<boolean>(false);
@@ -38,7 +39,7 @@ function selectOptionHandler(option: string) {
     <img :src="editIcon" alt="edit" @click="modalOpen = true"/>
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
       <template v-slot:modalContent>
-        <div class="value-input">
+        <div v-if="$props.enableCreate" class="value-input">
           <input type="text" v-model="newValue" placeholder="Введите новое значение"/>
           <img :src="addIcon" alt="add" class="value-input__add" @click="addValueHandler"/>
         </div>

@@ -13,7 +13,7 @@ fetchOptions();
 </script>
 
 <template>
-  <MultipleSelectInput :options="options">
+  <MultipleSelectInput :options="options" :enableCreate=true>
   </MultipleSelectInput>
 </template>
 
