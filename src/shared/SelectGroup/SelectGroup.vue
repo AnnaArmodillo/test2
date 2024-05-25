@@ -2,7 +2,7 @@
   const props = defineProps<{
     selectOptionHandler: (optionId: number) => void,
     unselectOptionHandler: (optionId: number) => void,
-    filteredOptions: T[],
+    visibleOptions: T[],
     values: number[]
   }>();
   function isEnabled(valueId: number) {
@@ -11,11 +11,13 @@
 </script>
 
 <template>
+  <p v-if="visibleOptions?.length < 1">Варианты не найдены</p>
   <ul class="select-group__options select-group_scrollable">
-    <li v-for="option in filteredOptions" :key="option.id"
+    <li v-for="option in visibleOptions" :key="option.id"
       @click="isEnabled(option.id) ? selectOptionHandler(option.id) : unselectOptionHandler(option.id)"
       :class="[!isEnabled(option.id) && 'select-group__option_disabled', 'select-group__option']">
       {{ option.title }}
+      <span v-if="option.not_saved" class="select-group__not-saved-mark">Новое</span>
     </li>
   </ul>
 </template>
@@ -34,7 +36,9 @@
   .select-group__option {
     list-style-type: none;
     text-align: left;
-    cursor: pointer
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
   }
 
   .select-group__option:not(:last-child) {
@@ -53,5 +57,10 @@
     background: #F2F2F2;
     width: 8px;
     border-radius: 8px;
+  }
+
+  .select-group__not-saved-mark {
+    color: green;
+    opacity: 0.5;
   }
 </style>

@@ -1,8 +1,8 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-  import { ref, computed } from "vue";
+  import { ref, computed, watch } from "vue";
   import Modal from "../Modal/Modal.vue";
   import SelectGroup from "../SelectGroup/SelectGroup.vue";
-  import { createOption } from "../../api/apiOptions.ts";
+  import { createOption, fetchOptions } from "../../api/apiOptions.ts";
   import editIcon from "/edit.svg";
   import closeIcon from "/close.svg";
   import addIcon from "/add.svg";
@@ -10,25 +10,43 @@
   import saveIcon from "/save.svg";
 
   const props = defineProps<{
-    options?: T[],
     values: number[],
     enableCreate?: boolean,
     showChosen?: boolean,
     placeholder?: string,
-    setOptions: () => void,
-    field: string
+    field: string,
+    searchFilters: Record<string, any>
   }>();
+  const emit = defineEmits(['resetTextSearch', 'resetFieldFilters']);
   const values = ref(props.values);
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
   const newOptionTitle = ref<string>("");
-  const createdOptions = ref<Pick<T, "id" | "title">[]>([]);
-  const filteredOptions = computed(() => {
-    return props.showChosen ? [createdOptions.value, props.options || []].flat() : [createdOptions.value, props.options || []].flat().filter((item) => !values.value.includes(item.title))
+  const createdOptions = ref<Pick<T, "id" | "title" | "not_saved">[]>([]);
+  const searchFilters = computed(() => props.searchFilters);
+  const allOptions = ref<T[]>([]);
+  const filteredOptions = ref<T[]>([]);
+  const visibleOptions = computed(() => {
+    return props.showChosen ? [createdOptions.value, filteredOptions.value || []].flat() : [createdOptions.value, filteredOptions.value || []].flat().filter((item) => !values.value.includes(item.id))
   });
+  function setFilteredOptions(searchParams?: Record<string, string>) {
+    fetchOptions(props.field, searchParams || {}).then((data) => filteredOptions.value = data);
+  }
+  function initOptions() {
+    fetchOptions(props.field, {}).then((data) => {
+      allOptions.value = data;
+      filteredOptions.value = data;
+  });
+  }
   function openModalHandler() {
     modalOpen.value = true;
     selectGroupOpen.value = false;
+    setFilteredOptions(searchFilters.value);
+  }
+  function closeModalHandler() {
+    emit("resetTextSearch");
+    emit("resetFieldFilters", props.field);
+    modalOpen.value = false;
   }
   function deleteValueHandler(id: number) {
     values.value = values.value.filter((item) => item !== id);
@@ -36,7 +54,7 @@
   function createOptionHandler() {
     const newOptionId = new Date().getTime();
     values.value.push(newOptionId);
-    createdOptions.value.push({ id: newOptionId, title: newOptionTitle.value } as Pick<T, "id" | "title">);
+    createdOptions.value.push({ id: newOptionId, title: newOptionTitle.value, not_saved: true } as Pick<T, "id" | "title" | "not_saved">);
     newOptionTitle.value = "";
   }
   function selectOptionHandler(optionId: number) {
@@ -50,10 +68,12 @@
       createOption(option.title, props.field);
     }))
       .then(() => {
-        props.setOptions();
+        setFilteredOptions();
         createdOptions.value = [];
       })
   }
+  initOptions();
+  watch(searchFilters, () => setFilteredOptions(searchFilters.value));
 </script>
 
 <template>
@@ -63,29 +83,30 @@
       <p v-if="values.length < 1" class="multiple-select__placeholder">{{ placeholder }}</p>
       <ul class="multiple-select__values">
         <li v-for="value in values" :key="value" class="multiple-select__value">
-          {{ filteredOptions?.find((option) => option.id === value)?.title }}
+          {{ allOptions?.find((option) => option.id === value)?.title }}
           <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" />
         </li>
       </ul>
       <img :src="expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
-      class="multiple-select__expand-button" />
+        class="multiple-select__expand-button" />
       <div v-if="selectGroupOpen" class="multiple-select__select-group">
         <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
-        :selectOptionHandler="selectOptionHandler" :filteredOptions="filteredOptions" />
+          :selectOptionHandler="selectOptionHandler" :visibleOptions="visibleOptions" />
       </div>
       <slot name="after"></slot>
     </div>
     <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" />
     <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" />
-    <Modal :modalOpen="modalOpen" @close="modalOpen = false">
+    <Modal :modalOpen="modalOpen" @close="closeModalHandler">
       <template v-slot:modalContent>
         <div v-if="$props.enableCreate" class="multiple-select__value-input">
           <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение"
             @keyup.enter="createOptionHandler" />
           <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" />
         </div>
+        <slot name="filters"></slot>
         <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
-          :selectOptionHandler="selectOptionHandler" :filteredOptions="filteredOptions" />
+          :selectOptionHandler="selectOptionHandler" :visibleOptions="visibleOptions" />
       </template>
     </Modal>
   </div>
@@ -112,7 +133,8 @@
     width: 100%;
   }
 
-  img, :slotted(img) {
+  img,
+  :slotted(img) {
     width: 24px;
     height: 24px;
     cursor: pointer;
@@ -177,11 +199,11 @@
     align-items: center;
   }
 
-  :slotted(div):not(:last-child) {
+  :slotted(.form__before) {
     margin-right: 12px;
   }
 
-  :slotted(div):last-child {
+  :slotted(.form__after) {
     margin-left: 12px;
   }
 
