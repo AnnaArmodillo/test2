@@ -8,8 +8,8 @@
 <template>
   <teleport to="body">
     <transition name="modal">
-      <div v-if="modalOpen" class="modal" @click="emit('close')">
-        <div class="modal__content" @click.stop>
+      <div v-if="modalOpen" class="modal" @mousedown="emit('close')" @touchstart="emit('close')">
+        <div class="modal__content" @click.stop @mousedown.stop @touchstart.stop>
           <img :src="closeIcon" alt="close" @click="emit('close')" class="modal__close" title="Закрыть" />
           <slot name="modalContent"></slot>
         </div>

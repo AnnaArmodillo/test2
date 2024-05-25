@@ -91,7 +91,7 @@
         @before-enter="isValuesEmpty = values.length ? false : true"
         @after-leave="isValuesEmpty = values.length ? false : true">
         <li v-for="value in values" :key="value" class="multiple-select__value">
-          {{ allOptions?.find((option) => option.id === value)?.title }}
+          {{ [allOptions, createdOptions].flat()?.find((option) => option.id === value)?.title }}
           <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" title="Удалить" />
         </li>
       </transition-group>
