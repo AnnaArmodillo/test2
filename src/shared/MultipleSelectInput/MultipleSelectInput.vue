@@ -78,7 +78,7 @@
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
       <template v-slot:modalContent>
         <div v-if="$props.enableCreate" class="multiple-select__value-input">
-          <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение" />
+          <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение" @keyup.enter="createOptionHandler" />
           <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" />
         </div>
         <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
