@@ -7,12 +7,14 @@
 
 <template>
   <teleport to="body">
-    <div v-if="modalOpen" class="modal" @click="emit('close')">
-      <div class="modal__content" @click.stop>
-        <img :src="closeIcon" alt="close" @click="emit('close')" class="modal__close" />
-        <slot name="modalContent"></slot>
+    <transition name="modal">
+      <div v-if="modalOpen" class="modal" @click="emit('close')">
+        <div class="modal__content" @click.stop>
+          <img :src="closeIcon" alt="close" @click="emit('close')" class="modal__close" />
+          <slot name="modalContent"></slot>
+        </div>
       </div>
-    </div>
+    </transition>
   </teleport>
 </template>
 
@@ -47,5 +49,15 @@
     width: 24px;
     height: 24px;
     cursor: pointer;
+  }
+
+  .modal-enter-active,
+  .modal-leave-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .modal-enter-from,
+  .modal-leave-to {
+    opacity: 0;
   }
 </style>

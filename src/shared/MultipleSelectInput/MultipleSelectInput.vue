@@ -26,17 +26,23 @@
   const searchFilters = computed(() => props.searchFilters);
   const allOptions = ref<T[]>([]);
   const filteredOptions = ref<T[]>([]);
+  const isLoading = ref<boolean>(false);
+  const isValuesEmpty = ref<boolean>(!values.value.length);
   const visibleOptions = computed(() => {
     return props.showChosen ? [createdOptions.value, filteredOptions.value || []].flat() : [createdOptions.value, filteredOptions.value || []].flat().filter((item) => !values.value.includes(item.id))
   });
   function setFilteredOptions(searchParams?: Record<string, string>) {
-    fetchOptions(props.field, searchParams || {}).then((data) => filteredOptions.value = data);
+    isLoading.value = true;
+    fetchOptions(props.field, searchParams || {}).then((data) => {
+      filteredOptions.value = data;
+      isLoading.value = false;
+    });
   }
   function initOptions() {
     fetchOptions(props.field, {}).then((data) => {
       allOptions.value = data;
       filteredOptions.value = data;
-  });
+    });
   }
   function openModalHandler() {
     modalOpen.value = true;
@@ -80,19 +86,23 @@
   <div class="multiple-select">
     <div class="multiple-select__input">
       <slot name="before"></slot>
-      <p v-if="values.length < 1" class="multiple-select__placeholder">{{ placeholder }}</p>
-      <ul class="multiple-select__values">
+      <p v-if="isValuesEmpty" class="multiple-select__placeholder">{{ placeholder }}</p>
+      <transition-group name="values" tag="ul" class="multiple-select__values"
+        @before-enter="isValuesEmpty = values.length ? false : true"
+        @after-leave="isValuesEmpty = values.length ? false : true">
         <li v-for="value in values" :key="value" class="multiple-select__value">
           {{ allOptions?.find((option) => option.id === value)?.title }}
           <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" />
         </li>
-      </ul>
+      </transition-group>
       <img :src="expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
         class="multiple-select__expand-button" />
-      <div v-if="selectGroupOpen" class="multiple-select__select-group">
-        <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
-          :selectOptionHandler="selectOptionHandler" :visibleOptions="visibleOptions" />
-      </div>
+      <transition name="options">
+        <div v-if="selectGroupOpen" class="multiple-select__select-group">
+          <SelectGroup :isLoading="isLoading" :unselectOptionHandler="unselectOptionHandler" :values="values"
+            :selectOptionHandler="selectOptionHandler" :visibleOptions="visibleOptions" />
+        </div>
+      </transition>
       <slot name="after"></slot>
     </div>
     <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" />
@@ -105,7 +115,7 @@
           <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" />
         </div>
         <slot name="filters"></slot>
-        <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
+        <SelectGroup :isLoading="isLoading" :unselectOptionHandler="unselectOptionHandler" :values="values"
           :selectOptionHandler="selectOptionHandler" :visibleOptions="visibleOptions" />
       </template>
     </Modal>
@@ -209,5 +219,27 @@
 
   :slotted(*):not(:last-child) {
     margin-right: 8px;
+  }
+
+  .values-enter-active,
+  .values-leave-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .values-enter-from,
+  .values-leave-to {
+    opacity: 0;
+  }
+
+  .options-enter-active,
+  .options-leave-active {
+    transition: opacity 1s ease, transform 0.5s ease;
+  }
+
+  .options-enter-from,
+  .options-leave-to {
+    opacity: 0;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 1s ease;
   }
 </style>

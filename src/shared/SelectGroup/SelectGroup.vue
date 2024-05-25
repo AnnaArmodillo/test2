@@ -1,9 +1,12 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
+  import Loader from "../Loader/Loader.vue";
+  
   const props = defineProps<{
     selectOptionHandler: (optionId: number) => void,
     unselectOptionHandler: (optionId: number) => void,
     visibleOptions: T[],
-    values: number[]
+    values: number[],
+    isLoading: boolean
   }>();
   function isEnabled(valueId: number) {
     return !props.values.includes(valueId);
@@ -11,8 +14,9 @@
 </script>
 
 <template>
-  <p v-if="visibleOptions?.length < 1">Варианты не найдены</p>
-  <ul class="select-group__options select-group_scrollable">
+  <Loader v-if="isLoading"></Loader>
+  <p v-else-if="!visibleOptions?.length">Варианты не найдены</p>
+  <ul v-else class="select-group__options select-group_scrollable">
     <li v-for="option in visibleOptions" :key="option.id"
       @click="isEnabled(option.id) ? selectOptionHandler(option.id) : unselectOptionHandler(option.id)"
       :class="[!isEnabled(option.id) && 'select-group__option_disabled', 'select-group__option']">
