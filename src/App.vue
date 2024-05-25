@@ -1,17 +1,10 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import MultipleSelectInput from './shared/MultipleSelectInput/MultipleSelectInput.vue';
-import { fetchOptions } from "./api/apiOptions";
-
-  const options = ref([]);
-  // const values = ref([]);
-  const values = ref([1, 10]);
-  fetchOptions().then((data) => options.value = data);
+  import FormComponent from "./components/FormComponent.vue";
 </script>
 
 <template>
-  <MultipleSelectInput :values="values" :options="options" :enableCreate="true" :showChosen="true">
-  </MultipleSelectInput>
+  <FormComponent>
+  </FormComponent>
 </template>
 
 <style scoped></style>

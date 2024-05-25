@@ -12,7 +12,8 @@
 
 <template>
   <ul class="select-group__options select-group_scrollable">
-    <li v-for="option in filteredOptions" :key="option.id" @click="isEnabled(option.id) ? selectOptionHandler(option.id) : unselectOptionHandler(option.id)"
+    <li v-for="option in filteredOptions" :key="option.id"
+      @click="isEnabled(option.id) ? selectOptionHandler(option.id) : unselectOptionHandler(option.id)"
       :class="[!isEnabled(option.id) && 'select-group__option_disabled', 'select-group__option']">
       {{ option.title }}
     </li>
