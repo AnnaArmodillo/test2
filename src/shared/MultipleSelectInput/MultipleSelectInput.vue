@@ -10,25 +10,25 @@
   import saveIcon from "/save.svg";
 
   const props = defineProps<{
-    values: number[],
-    enableCreate?: boolean,
-    showChosen?: boolean,
-    placeholder?: string,
-    field: string,
-    searchFilters: Record<string, any>
+    values: number[], // значения инпута из формы
+    enableCreate?: boolean, // допустимо ли добавление собственных вариантов
+    showChosen?: boolean, // показывать ли в списке вариантов уже выбранные значения
+    placeholder?: string, // плэйсхолдер для отображения в инпуте, если нет выбранных значений
+    field: string, // название поля в форме
+    searchFilters: Record<string, any> // фильтры для получения вариантов
   }>();
   const emit = defineEmits(['resetTextSearch', 'resetFieldFilters']);
-  const values = ref(props.values);
+  const values = ref(props.values); // текущие значения инпута
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
   const newOptionTitle = ref<string>("");
   const createdOptions = ref<Pick<T, "id" | "title" | "not_saved">[]>([]);
   const searchFilters = computed(() => props.searchFilters);
-  const allOptions = ref<T[]>([]);
-  const filteredOptions = ref<T[]>([]);
+  const allOptions = ref<T[]>([]);   // все варианты (получаем один раз при монтировании компонента, нужны для корректного отображения title выбранных значений)
+  const filteredOptions = ref<T[]>([]); // варианты, полученные с бэка по выбранным фильтрам
   const isLoading = ref<boolean>(false);
   const isValuesEmpty = ref<boolean>(!values.value.length);
-  const visibleOptions = computed(() => {
+  const visibleOptions = computed(() => {   // значения, которые будут отображаться в списке вариантов
     return props.showChosen ? [createdOptions.value, filteredOptions.value || []].flat() : [createdOptions.value, filteredOptions.value || []].flat().filter((item) => !values.value.includes(item.id))
   });
   function setFilteredOptions(searchParams?: Record<string, string>) {
