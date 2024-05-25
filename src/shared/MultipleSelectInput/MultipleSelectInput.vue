@@ -8,6 +8,7 @@
   import addIcon from "/add.svg";
   import expandIcon from "/expand.svg";
   import saveIcon from "/save.svg";
+  import shrinkIcon from "/shrink.svg";
 
   const props = defineProps<{
     values: number[], // значения инпута из формы
@@ -94,8 +95,8 @@
           <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" title="Удалить" />
         </li>
       </transition-group>
-      <img :src="expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
-        class="multiple-select__expand-button" title="Открыть список" />
+      <img :src="selectGroupOpen ? shrinkIcon : expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
+        class="multiple-select__expand-button" :title="selectGroupOpen ? 'Закрыть' : 'Открыть список'" />
       <transition name="options">
         <div v-if="selectGroupOpen" class="multiple-select__select-group">
           <SelectGroup :isLoading="isLoading" :unselectOptionHandler="unselectOptionHandler" :values="values"
