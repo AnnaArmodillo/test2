@@ -6,18 +6,11 @@
     import uncompletedIcon from "/unchecked.svg";
     const values = ref<Record<string, any>>({ posts: [], todos: [1, 13] });
     const searchFilters = ref<Record<string, any>>({ posts: {}, todos: {} });
-    const textSearchValue = ref<string>("");
     function setFilters(field: string, param: string, value: string) {
         searchFilters.value = { ...searchFilters.value, [field]: { ...searchFilters.value[field], [param]: value } };
     }
     function submitHandler() {
-        console.log(values);
-    }
-    function setTextSearch(field: string, value: string) {
-        setFilters(field, 'textSearch', value);
-    }
-    function resetTextSearch() {
-        textSearchValue.value = "";
+        console.log(values.value);
     }
     function resetFieldFilters(field: string) {
         searchFilters.value = { ...searchFilters.value, [field]: {} };
@@ -28,8 +21,7 @@
     <form class="form">
         <div class="form__input">
             <MultipleSelectInput @resetFieldFilters="resetFieldFilters" :searchFilters="searchFilters.posts"
-                @resetTextSearch="resetTextSearch" field="posts" placeholder="Выберите значения" :values="values.posts"
-                :showChosen="false">
+                field="posts" placeholder="Выберите значения" :values="values.posts" :showChosen="false">
                 <template v-slot:before>
                     <div class="form__before">
                         <img :src="questionIcon" alt="someIcon1" />
@@ -45,8 +37,8 @@
         </div>
         <div class="form__input form__input_full-width">
             <MultipleSelectInput @resetFieldFilters="resetFieldFilters" :searchFilters="searchFilters.todos"
-                @resetTextSearch="resetTextSearch" field="todos" placeholder="Выберите значения" :values="values.todos"
-                :enableCreate="true" :showChosen="true">
+                field="todos" placeholder="Выберите значения" :values="values.todos" :enableCreate="true"
+                :showChosen="true">
                 <template v-slot:filters>
                     <div class="form__filters">
                         <img class="form__filter-input"
@@ -54,16 +46,17 @@
                             :src="searchFilters.todos?.completed === 'true' ? completedIcon : uncompletedIcon"
                             alt="user"
                             @click="searchFilters.todos?.completed === 'true' ? setFilters('todos', 'completed', 'false') : setFilters('todos', 'completed', 'true')">
-                        <input class="form__filter-input" type="text" v-model="textSearchValue"
-                            placeholder="Поиск по тексту" @input="setTextSearch('todos', textSearchValue)" />
+                        <input class="form__filter-input" type="text" :value="searchFilters.todos?.textSearch"
+                            placeholder="Поиск по тексту" title="Фильтр по названию"
+                            @input="(e) => setFilters('todos', 'textSearch', (e.target as HTMLInputElement).value)" />
                         <input class="form__filter-input" type="text" :value="searchFilters.todos?.userId"
-                            placeholder="ID пользователя"
+                            placeholder="ID пользователя" title="Фильтр по пользователям"
                             @input="(e) => setFilters('todos', 'userId', (e.target as HTMLInputElement).value)" />
                     </div>
                 </template>
             </MultipleSelectInput>
         </div>
-        <button @click="submitHandler">Сохранить</button>
+        <button @click.prevent="submitHandler">Сохранить</button>
     </form>
 </template>
 

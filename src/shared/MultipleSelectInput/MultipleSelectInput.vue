@@ -17,7 +17,7 @@
     field: string, // название поля в форме
     searchFilters: Record<string, any> // фильтры для получения вариантов
   }>();
-  const emit = defineEmits(['resetTextSearch', 'resetFieldFilters']);
+  const emit = defineEmits(['resetFieldFilters']);
   const values = ref(props.values); // текущие значения инпута
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
@@ -50,7 +50,6 @@
     setFilteredOptions(searchFilters.value);
   }
   function closeModalHandler() {
-    emit("resetTextSearch");
     emit("resetFieldFilters", props.field);
     modalOpen.value = false;
   }
@@ -92,11 +91,11 @@
         @after-leave="isValuesEmpty = values.length ? false : true">
         <li v-for="value in values" :key="value" class="multiple-select__value">
           {{ allOptions?.find((option) => option.id === value)?.title }}
-          <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" />
+          <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" title="Удалить" />
         </li>
       </transition-group>
       <img :src="expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
-        class="multiple-select__expand-button" />
+        class="multiple-select__expand-button" title="Открыть список" />
       <transition name="options">
         <div v-if="selectGroupOpen" class="multiple-select__select-group">
           <SelectGroup :isLoading="isLoading" :unselectOptionHandler="unselectOptionHandler" :values="values"
@@ -105,14 +104,14 @@
       </transition>
       <slot name="after"></slot>
     </div>
-    <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" />
-    <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" />
+    <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" title="Фильтрация и создание новых вариантов" />
+    <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" title="Сохранить добавленные варианты" />
     <Modal :modalOpen="modalOpen" @close="closeModalHandler">
       <template v-slot:modalContent>
         <div v-if="$props.enableCreate" class="multiple-select__value-input">
           <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение"
             @keyup.enter="createOptionHandler" />
-          <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" />
+          <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" title="Добавить значение" />
         </div>
         <slot name="filters"></slot>
         <SelectGroup :isLoading="isLoading" :unselectOptionHandler="unselectOptionHandler" :values="values"

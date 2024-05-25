@@ -10,7 +10,7 @@
     <transition name="modal">
       <div v-if="modalOpen" class="modal" @click="emit('close')">
         <div class="modal__content" @click.stop>
-          <img :src="closeIcon" alt="close" @click="emit('close')" class="modal__close" />
+          <img :src="closeIcon" alt="close" @click="emit('close')" class="modal__close" title="Закрыть" />
           <slot name="modalContent"></slot>
         </div>
       </div>
