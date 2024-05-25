@@ -48,17 +48,18 @@
   function saveCreatedOptions() {
     Promise.all(createdOptions.value.map(async (option) => {
       createOption(option.title, props.field);
-        }))
+    }))
       .then(() => {
         props.setOptions();
         createdOptions.value = [];
-    })
+      })
   }
 </script>
 
 <template>
   <div class="multiple-select">
     <div class="multiple-select__input">
+      <slot name="before"></slot>
       <p v-if="values.length < 1" class="multiple-select__placeholder">{{ placeholder }}</p>
       <ul class="multiple-select__values">
         <li v-for="value in values" :key="value" class="multiple-select__value">
@@ -67,18 +68,20 @@
         </li>
       </ul>
       <img :src="expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
-        class="multiple-select__expand-button" />
+      class="multiple-select__expand-button" />
       <div v-if="selectGroupOpen" class="multiple-select__select-group">
         <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
-          :selectOptionHandler="selectOptionHandler" :filteredOptions="filteredOptions" />
+        :selectOptionHandler="selectOptionHandler" :filteredOptions="filteredOptions" />
       </div>
+      <slot name="after"></slot>
     </div>
     <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" />
     <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" />
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
       <template v-slot:modalContent>
         <div v-if="$props.enableCreate" class="multiple-select__value-input">
-          <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение" @keyup.enter="createOptionHandler" />
+          <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение"
+            @keyup.enter="createOptionHandler" />
           <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" />
         </div>
         <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values"
@@ -109,7 +112,7 @@
     width: 100%;
   }
 
-  img {
+  img, :slotted(img) {
     width: 24px;
     height: 24px;
     cursor: pointer;
@@ -117,7 +120,7 @@
 
   .multiple-select__values {
     display: flex;
-    padding: 4px 0 0 0;
+    padding: 0;
     margin: 0;
     flex-wrap: wrap;
   }
@@ -167,5 +170,22 @@
   .multiple-select__placeholder {
     margin: 0;
     opacity: 0.8;
+  }
+
+  :slotted(div) {
+    display: flex;
+    align-items: center;
+  }
+
+  :slotted(div):not(:last-child) {
+    margin-right: 12px;
+  }
+
+  :slotted(div):last-child {
+    margin-left: 12px;
+  }
+
+  :slotted(*):not(:last-child) {
+    margin-right: 8px;
   }
 </style>
