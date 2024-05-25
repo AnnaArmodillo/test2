@@ -1,19 +1,19 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
   const props = defineProps<{
-    selectOptionHandler: (title: string) => void,
-    unselectOptionHandler: (title: string) => void,
+    selectOptionHandler: (optionId: number) => void,
+    unselectOptionHandler: (optionId: number) => void,
     filteredOptions: T[],
-    values: string[]
+    values: number[]
   }>();
-  function isEnabled(value: string) {
-    return !props.values.includes(value);
+  function isEnabled(valueId: number) {
+    return !props.values.includes(valueId);
   }
 </script>
 
 <template>
   <ul class="select-group__options select-group_scrollable">
-    <li v-for="option in filteredOptions" :key="option.id" @click="isEnabled(option.title) ? selectOptionHandler(option.title) : unselectOptionHandler(option.title)"
-      :class="[!isEnabled(option.title) && 'select-group__option_disabled', 'select-group__option']">
+    <li v-for="option in filteredOptions" :key="option.id" @click="isEnabled(option.id) ? selectOptionHandler(option.id) : unselectOptionHandler(option.id)"
+      :class="[!isEnabled(option.id) && 'select-group__option_disabled', 'select-group__option']">
       {{ option.title }}
     </li>
   </ul>

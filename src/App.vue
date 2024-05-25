@@ -1,19 +1,16 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import MultipleSelectInput from './shared/MultipleSelectInput/MultipleSelectInput.vue';
+import { fetchOptions } from "./api/apiOptions";
 
   const options = ref([]);
-  async function fetchOptions() {
-    const res = await fetch(
-      `https://jsonplaceholder.typicode.com/todos`
-    );
-    options.value = await res.json();
-  }
-  fetchOptions();
+  // const values = ref([]);
+  const values = ref([1, 10]);
+  fetchOptions().then((data) => options.value = data);
 </script>
 
 <template>
-  <MultipleSelectInput :options="options" :enableCreate="true" :showChosen="true">
+  <MultipleSelectInput :values="values" :options="options" :enableCreate="true" :showChosen="true">
   </MultipleSelectInput>
 </template>
 

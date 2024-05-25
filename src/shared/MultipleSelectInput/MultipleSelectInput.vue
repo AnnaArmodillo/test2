@@ -9,32 +9,35 @@
 
   const props = defineProps<{
     options?: T[],
+    values: number[],
     enableCreate?: boolean,
     showChosen?: boolean
   }>();
-
+  const values = ref(props.values);
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
-  const values = ref<string[]>(["1", "2", "item"]);
-  const newValue = ref<string>("");
+  const newOptionTitle = ref<string>("");
+  const createdOptions = ref<Pick<T, "id" | "title">[]>([]);
   const filteredOptions = computed(() => {
-    return props.showChosen ? props.options || [] : props.options?.filter((item) => !values.value.includes(item.title)) || []});
+    return props.showChosen ? [createdOptions.value, props.options || []].flat() : [createdOptions.value, props.options || []].flat().filter((item) => !values.value.includes(item.title))});
   function openModalHandler() {
     modalOpen.value = true;
     selectGroupOpen.value = false;
   }
-  function deleteValueHandler(value: string) {
-    values.value = values.value.filter((item) => item !== value);
+  function deleteValueHandler(id: number) {
+    values.value = values.value.filter((item) => item !== id);
   }
-  function addValueHandler() {
-    values.value.push(newValue.value);
-    newValue.value = "";
+  function createOptionHandler() {
+    const newOptionId = new Date().getTime();
+    values.value.push(newOptionId);
+    createdOptions.value.push({id: newOptionId, title: newOptionTitle.value} as Pick<T, "id" | "title">);
+    newOptionTitle.value = "";
   }
-  function selectOptionHandler(option: string) {
-    values.value.push(option);
+  function selectOptionHandler(optionId: number) {
+    values.value.push(optionId);
   }
-  function unselectOptionHandler(option: string) {
-    values.value = values.value.filter((value) => value !== option);
+  function unselectOptionHandler(optionId: number) {
+    values.value = values.value.filter((value) => value !== optionId);
   }
 </script>
 
@@ -43,7 +46,7 @@
     <div class="multiple-select__input">
       <ul class="multiple-select__values">
         <li v-for="value in values" :key="value" class="multiple-select__value">
-          {{ value }}
+          {{ filteredOptions?.find((option) => option.id === value)?.title }}
           <img :src="closeIcon" alt="delete" @click="deleteValueHandler(value)" class="multiple-select__delete-icon" />
         </li>
       </ul>
@@ -57,8 +60,8 @@
     <Modal :modalOpen="modalOpen" @close="modalOpen = false">
       <template v-slot:modalContent>
         <div v-if="$props.enableCreate" class="multiple-select__value-input">
-          <input type="text" v-model="newValue" placeholder="Введите новое значение" />
-          <img :src="addIcon" alt="add" class="multiple-select__add" @click="addValueHandler" />
+          <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение" />
+          <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" />
         </div>
         <SelectGroup :unselectOptionHandler="unselectOptionHandler" :values="values" :selectOptionHandler="selectOptionHandler" :filteredOptions="filteredOptions" />
       </template>
