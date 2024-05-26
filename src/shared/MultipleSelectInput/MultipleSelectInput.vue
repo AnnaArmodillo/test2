@@ -106,7 +106,7 @@
       <slot name="after"></slot>
     </div>
     <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" title="Фильтрация и создание новых вариантов" />
-    <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" title="Сохранить добавленные варианты" />
+    <img v-if="props.enableCreate" :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" title="Сохранить добавленные варианты" />
     <Modal :modalOpen="modalOpen" @close="closeModalHandler">
       <template v-slot:modalContent>
         <div v-if="props.enableCreate" class="multiple-select__value-input">
