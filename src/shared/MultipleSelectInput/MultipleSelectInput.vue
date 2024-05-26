@@ -16,7 +16,7 @@
     showChosen?: boolean, // показывать ли в списке вариантов уже выбранные значения
     placeholder?: string, // плэйсхолдер для отображения в инпуте, если нет выбранных значений
     field: string, // название поля в форме
-    searchFilters: Record<string, any> // фильтры для получения вариантов
+    searchFilters?: Record<string, any> // фильтры для получения вариантов
   }>();
   const emit = defineEmits(['resetFieldFilters']);
   const values = ref(props.values); // текущие значения инпута
@@ -109,7 +109,7 @@
     <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" title="Сохранить добавленные варианты" />
     <Modal :modalOpen="modalOpen" @close="closeModalHandler">
       <template v-slot:modalContent>
-        <div v-if="$props.enableCreate" class="multiple-select__value-input">
+        <div v-if="props.enableCreate" class="multiple-select__value-input">
           <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение"
             @keyup.enter="createOptionHandler" />
           <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" title="Добавить значение" />
