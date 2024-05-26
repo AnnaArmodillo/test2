@@ -14,12 +14,15 @@
     function resetFieldFilters(field: string) {
         searchFilters.value = { ...searchFilters.value, [field]: {} };
     }
+    function updateValues(field: string, fieldValues: number[]) {
+        values.value = {...values.value, [field]: fieldValues};
+    }
 </script>
 
 <template>
     <form class="form">
         <div class="form__input">
-            <MultipleSelectInput @resetFieldFilters="resetFieldFilters"
+            <MultipleSelectInput @resetFieldFilters="resetFieldFilters" @updateValues="updateValues"
                 field="posts" placeholder="Выберите значения" :values="values.posts" :showChosen="false">
                 <template v-slot:before>
                     <div class="form__before">
@@ -35,7 +38,7 @@
             </MultipleSelectInput>
         </div>
         <div class="form__input form__input_full-width">
-            <MultipleSelectInput @resetFieldFilters="resetFieldFilters" :searchFilters="searchFilters.todos"
+            <MultipleSelectInput @resetFieldFilters="resetFieldFilters" @updateValues="updateValues" :searchFilters="searchFilters.todos"
                 field="todos" placeholder="Выберите значения" :values="values.todos" :enableCreate="true"
                 :showChosen="true">
                 <template v-slot:filters>

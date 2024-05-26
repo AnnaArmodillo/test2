@@ -18,7 +18,7 @@
     field: string, // название поля в форме
     searchFilters?: Record<string, any> // фильтры для получения вариантов
   }>();
-  const emit = defineEmits(['resetFieldFilters']);
+  const emit = defineEmits(['resetFieldFilters', 'updateValues']);
   const values = ref(props.values); // текущие значения инпута
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
@@ -80,6 +80,7 @@
   }
   initOptions();
   watch(searchFilters, () => setFilteredOptions(searchFilters.value));
+  watch(values, () => emit('updateValues', props.field, values.value));
 </script>
 
 <template>
