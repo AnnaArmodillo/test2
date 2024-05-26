@@ -99,7 +99,7 @@
       <img :src="selectGroupOpen ? shrinkIcon : expandIcon" alt="open" @click="selectGroupOpen = !selectGroupOpen"
         class="multiple-select__expand-button" :title="selectGroupOpen ? 'Закрыть' : 'Открыть список'" />
       <transition name="options">
-        <div v-if="selectGroupOpen" class="multiple-select__select-group">
+        <div v-if="selectGroupOpen" class="multiple-select__select-group" @click="selectGroupOpen = false">
           <SelectGroup :isLoading="isLoading" :unselectOptionHandler="unselectOptionHandler" :values="values"
             :selectOptionHandler="selectOptionHandler" :visibleOptions="visibleOptions" />
         </div>
