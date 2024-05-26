@@ -71,7 +71,7 @@
   }
   function saveCreatedOptions() {
     Promise.all(createdOptions.value.map(async (option) => {
-      createOption(option.title, props.field);
+      await createOption(option.title, props.field);
     }))
       .then(() => {
         setFilteredOptions();
