@@ -16,9 +16,9 @@
     showChosen?: boolean, // показывать ли в списке вариантов уже выбранные значения
     placeholder?: string, // плэйсхолдер для отображения в инпуте, если нет выбранных значений
     field: string, // название поля в форме
-    searchFilters: Record<string, any> // фильтры для получения вариантов
+    searchFilters?: Record<string, any> // фильтры для получения вариантов
   }>();
-  const emit = defineEmits(['resetFieldFilters']);
+  const emit = defineEmits(['resetFieldFilters', 'updateValues']);
   const values = ref(props.values); // текущие значения инпута
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
@@ -71,7 +71,7 @@
   }
   function saveCreatedOptions() {
     Promise.all(createdOptions.value.map(async (option) => {
-      createOption(option.title, props.field);
+      await createOption(option.title, props.field);
     }))
       .then(() => {
         setFilteredOptions();
@@ -80,6 +80,7 @@
   }
   initOptions();
   watch(searchFilters, () => setFilteredOptions(searchFilters.value));
+  watch(values, () => emit('updateValues', props.field, values.value));
 </script>
 
 <template>
@@ -106,10 +107,10 @@
       <slot name="after"></slot>
     </div>
     <img :src="editIcon" alt="edit" @click="openModalHandler" class="multiple-select__action-button" title="Фильтрация и создание новых вариантов" />
-    <img :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" title="Сохранить добавленные варианты" />
+    <img v-if="props.enableCreate" :src="saveIcon" alt="save" @click="saveCreatedOptions" class="multiple-select__action-button" title="Сохранить добавленные варианты" />
     <Modal :modalOpen="modalOpen" @close="closeModalHandler">
       <template v-slot:modalContent>
-        <div v-if="$props.enableCreate" class="multiple-select__value-input">
+        <div v-if="props.enableCreate" class="multiple-select__value-input">
           <input type="text" v-model="newOptionTitle" placeholder="Введите новое значение"
             @keyup.enter="createOptionHandler" />
           <img :src="addIcon" alt="add" class="multiple-select__add" @click="createOptionHandler" title="Добавить значение" />
