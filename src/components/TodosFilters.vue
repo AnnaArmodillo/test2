@@ -1,26 +1,27 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
+    import { inject } from 'vue';
     import completedIcon from "/checked.svg";
     import uncompletedIcon from "/unchecked.svg";
 
-    const props = defineProps<{
-        field: string,
-        searchFilters: Record<string, any>
-    }>();
-    const emit = defineEmits(['setFilters']);
+    type Filters = {
+        searchFilters: Pick<T, "completed" | "userId" | "textSearch">,
+        setFilters: (param: string, value: any) => void
+    }
+    const { searchFilters, setFilters } = inject('searchFilters') as Filters;
 </script>
 
 <template>
     <div class="filters">
         <img class="filters__input"
-            :title="props.searchFilters?.completed ? 'Завершенные' : 'Не завершенные'"
-            :src="props.searchFilters?.completed ? completedIcon : uncompletedIcon" alt="user"
-            @click="props.searchFilters?.completed ? emit('setFilters', props.field, 'completed', false) : emit('setFilters', props.field, 'completed', true)">
-        <input class="filters__input" type="text" :value="props.searchFilters?.textSearch" placeholder="Поиск по тексту"
+            :title="searchFilters?.completed ? 'Завершенные' : 'Не завершенные'"
+            :src="searchFilters?.completed ? completedIcon : uncompletedIcon" alt="user"
+            @click="searchFilters?.completed ? setFilters('completed', false) : setFilters('completed', true)">
+        <input class="filters__input" type="text" :value="searchFilters?.textSearch" placeholder="Поиск по тексту"
             title="Фильтр по названию"
-            @input="(e) => emit('setFilters', props.field, 'textSearch', (e.target as HTMLInputElement).value)" />
-        <input class="filters__input" type="text" :value="props.searchFilters?.userId" placeholder="ID пользователя"
+            @input="(e) => setFilters('textSearch', (e.target as HTMLInputElement).value)" />
+        <input class="filters__input" type="text" :value="searchFilters?.userId" placeholder="ID пользователя"
             title="Фильтр по пользователям"
-            @input="(e) => emit('setFilters', props.field, 'userId', (e.target as HTMLInputElement).value)" />
+            @input="(e) => setFilters('userId', (e.target as HTMLInputElement).value)" />
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-  import { ref, computed, watch } from "vue";
+  import { ref, computed, watch, provide } from "vue";
   import Modal from "../Modal/Modal.vue";
   import SelectGroup from "../SelectGroup/SelectGroup.vue";
   import { createOption, fetchOptions } from "../../api/apiOptions.ts";
@@ -16,15 +16,14 @@
     showChosen?: boolean, // показывать ли в списке вариантов уже выбранные значения
     placeholder?: string, // плэйсхолдер для отображения в инпуте, если нет выбранных значений
     field: string, // название поля в форме
-    searchFilters?: Record<string, any> // фильтры для получения вариантов
   }>();
-  const emit = defineEmits(['resetFieldFilters', 'updateValues']);
+  const emit = defineEmits(['updateValues']);
   const values = ref(props.values); // текущие значения инпута
   const modalOpen = ref<boolean>(false);
   const selectGroupOpen = ref<boolean>(false);
   const newOptionTitle = ref<string>("");
   const createdOptions = ref<Pick<T, "id" | "title" | "not_saved">[]>([]);
-  const searchFilters = computed(() => props.searchFilters);
+  const searchFilters = ref<Record<string, any>>({});
   const allOptions = ref<T[]>([]);   // все варианты (получаем один раз при монтировании компонента, нужны для корректного отображения title выбранных значений)
   const filteredOptions = ref<T[]>([]); // варианты, полученные с бэка по выбранным фильтрам
   const isLoading = ref<boolean>(false);
@@ -51,7 +50,7 @@
     setFilteredOptions(searchFilters.value);
   }
   function closeModalHandler() {
-    emit("resetFieldFilters", props.field);
+    resetFieldFilters();
     modalOpen.value = false;
   }
   function deleteValueHandler(id: number) {
@@ -78,9 +77,16 @@
         createdOptions.value = [];
       })
   }
+  function setFilters(param: string, value: any): void {
+      searchFilters.value = {...searchFilters.value, [param]: value};
+  }
+  function resetFieldFilters() {
+      searchFilters.value = {};
+  }
   initOptions();
   watch(searchFilters, () => setFilteredOptions(searchFilters.value));
   watch(values, () => emit('updateValues', props.field, values.value));
+  provide('searchFilters', {searchFilters, setFilters});
 </script>
 
 <template>
