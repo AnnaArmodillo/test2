@@ -4,15 +4,8 @@
     import TodosFilters from './TodosFilters.vue';
     import questionIcon from "/question.svg";
     const values = ref<Record<string, any>>({ posts: [], todos: [1, 13] });
-    const searchFilters = ref<Record<string, any>>({});
-    function setFilters(field: string, param: string, value: string) {
-        searchFilters.value = { ...searchFilters.value, [field]: { ...searchFilters.value[field], [param]: value } };
-    }
     function submitHandler() {
         console.log(values.value);
-    }
-    function resetFieldFilters(field: string) {
-        searchFilters.value = { ...searchFilters.value, [field]: {} };
     }
     function updateValues(field: string, fieldValues: number[]) {
         values.value = {...values.value, [field]: fieldValues};
@@ -22,7 +15,7 @@
 <template>
     <form class="form">
         <div class="form__input">
-            <MultipleSelectInput @resetFieldFilters="resetFieldFilters" @updateValues="updateValues"
+            <MultipleSelectInput @updateValues="updateValues"
                 field="posts" placeholder="Выберите значения" :values="values.posts" :showChosen="false">
                 <template v-slot:before>
                     <div class="form__before">
@@ -38,11 +31,10 @@
             </MultipleSelectInput>
         </div>
         <div class="form__input form__input_full-width">
-            <MultipleSelectInput @resetFieldFilters="resetFieldFilters" @updateValues="updateValues" :searchFilters="searchFilters.todos"
-                field="todos" placeholder="Выберите значения" :values="values.todos" :enableCreate="true"
+            <MultipleSelectInput @updateValues="updateValues" field="todos" placeholder="Выберите значения" :values="values.todos" :enableCreate="true"
                 :showChosen="true">
                 <template v-slot:filters>
-                    <TodosFilters field="todos" @setFilters="setFilters" :searchFilters="searchFilters.todos || {}"></TodosFilters>
+                    <TodosFilters></TodosFilters>
                 </template>
             </MultipleSelectInput>
         </div>
