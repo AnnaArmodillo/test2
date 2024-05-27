@@ -3,6 +3,7 @@
   import Modal from "../Modal/Modal.vue";
   import SelectGroup from "../SelectGroup/SelectGroup.vue";
   import { createOption, fetchOptions } from "../../api/apiOptions.ts";
+  import { FiltersKey } from '../../interfaces/Filters.ts';
   import editIcon from "/edit.svg";
   import closeIcon from "/close.svg";
   import addIcon from "/add.svg";
@@ -86,7 +87,7 @@
   initOptions();
   watch(searchFilters, () => setFilteredOptions(searchFilters.value));
   watch(values, () => emit('updateValues', props.field, values.value));
-  provide('searchFilters', {searchFilters, setFilters});
+  provide(FiltersKey, {searchFilters, setFilters});
 </script>
 
 <template>

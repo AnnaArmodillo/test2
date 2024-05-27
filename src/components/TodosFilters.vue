@@ -2,12 +2,9 @@
     import { inject } from 'vue';
     import completedIcon from "/checked.svg";
     import uncompletedIcon from "/unchecked.svg";
+    import { FiltersKey } from '../interfaces/Filters';
 
-    type Filters = {
-        searchFilters: Pick<T, "completed" | "userId" | "textSearch">,
-        setFilters: (param: string, value: any) => void
-    }
-    const { searchFilters, setFilters } = inject('searchFilters') as Filters;
+    const { searchFilters, setFilters } = inject(FiltersKey, {searchFilters: {}, setFilters: () => {}});
 </script>
 
 <template>
